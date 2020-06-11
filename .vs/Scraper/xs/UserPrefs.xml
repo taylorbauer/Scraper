@@ -1,0 +1,27 @@
+﻿<Properties StartupConfiguration="{1561A6FB-7E46-17F5-C370-1FD98AD4C317}|">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/DataModel/Tile.cs">
+    <Files>
+      <File FileName="Assets/DataModel/Tile.cs" Line="1" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Scraper" expanded="True">
+            <Node name="Assets" expanded="True">
+              <Node name="DataModel" expanded="True">
+                <Node name="Tile.cs" selected="True" />
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="e2f6b1b2-22bb-4fa3-860a-343f3b16660b" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>

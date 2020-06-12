@@ -5,11 +5,19 @@ using UnityEngine;
 
 public class WorldController : MonoBehaviour
 {
+
+    public static WorldController instance {get; protected set;}
+
     public Sprite floorSprite;
-    World world;
+    public World world {get; protected set;}
     // Start is called before the first frame update
     void Start()
     {
+        if (instance != null) {
+            Debug.LogError("Problem!  There should never be 2 WorldControllers.");
+        }
+        instance = this;
+
         world = new World();
         //world.RandomizeTiles();
 
@@ -23,7 +31,7 @@ public class WorldController : MonoBehaviour
                 tile_go.transform.position = new Vector3( tile_data.x, tile_data.y, 0);
                 tile_data.registerTileTypeChangedCallback( (tile) => { OnTileTypeChanged(tile, tile_go); } );
                 OnTileTypeChanged(tile_data, tile_go);
-                
+                tile_go.transform.SetParent(this.transform, true);
             }
         }
         //world.RandomizeTiles();
@@ -50,7 +58,7 @@ public class WorldController : MonoBehaviour
             tile_go.GetComponent<SpriteRenderer>().sprite = null;
         }
         else {
-            Debug.Log ("OnTyleTypeChanged(): Unrecognized tile type");
+            Debug.Log ("OnTileTypeChanged(): Unrecognized tile type");
         }
     }
 }

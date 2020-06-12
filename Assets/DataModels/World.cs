@@ -20,7 +20,7 @@ public class World
     int _vertical_height;
     int _vertical_depth;
 
-    public World(int width = 15, int height = 15) {
+    public World(int width = 150, int height = 150) {
         _vertical_height = 0;
         _vertical_depth = 0;
         this._width = width;
@@ -32,7 +32,7 @@ public class World
                 tiles[x,y,0] = new Tile(this, x, y, 0);
             }
         }
-
+        RandomizeTiles();
         Debug.Log ("World created with " + width * height + " tiles.");
     }
 

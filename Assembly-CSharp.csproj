@@ -44,7 +44,8 @@
     <ImplicitlyExpandNETStandardFacades>false</ImplicitlyExpandNETStandardFacades>
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
-  <ItemGroup>     <Compile Include="Assets\Controllers\WorldController.cs" />
+  <ItemGroup>     <Compile Include="Assets\Controllers\MouseController.cs" />
+     <Compile Include="Assets\Controllers\WorldController.cs" />
      <Compile Include="Assets\DataModels\InstalledObject.cs" />
      <Compile Include="Assets\DataModels\LooseObject.cs" />
      <Compile Include="Assets\DataModels\Tile.cs" />

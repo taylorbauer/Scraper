@@ -50,6 +50,8 @@
      <Compile Include="Assets\DataModels\LooseObject.cs" />
      <Compile Include="Assets\DataModels\Tile.cs" />
      <Compile Include="Assets\DataModels\World.cs" />
+     <Compile Include="Assets\UI\AutomaticVerticalSize.cs" />
+     <Compile Include="Assets\UI\AutomaticVerticalSizeEditor.cs" />
  <Reference Include="Unity.Timeline.Editor">
  <HintPath>/Users/taylor/Scraper/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
  </Reference>

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems; 
 
 public class MouseController : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class MouseController : MonoBehaviour
     Vector3 dragStartPosition;
     Vector3 currentFramePosition;
     List<GameObject> dragPreviewGameObjects;
+
+    TileType buildModeTile = TileType.Floor;
 
     // Start is called before the first frame update
     void Start()
@@ -51,6 +54,12 @@ public class MouseController : MonoBehaviour
     void UpdateDragging()
     {
         // Handling left mouse clicks
+
+        // If we are over a UI element, we need to bail out
+        if (EventSystem.current.IsPointerOverGameObject()) {
+            // ^^Like, specifically, is it over a user interface object.
+            return;
+        }
 
         // Starting drag
         if (Input.GetMouseButtonDown(0))
@@ -115,7 +124,7 @@ public class MouseController : MonoBehaviour
                     Tile t = WorldController.instance.world.GetTileAt(x, y, 0);
                     if (t != null)
                     {
-                        t.type = Tile.TileType.Floor;
+                        t.type = buildModeTile;
                     }
                 }
             }
@@ -135,6 +144,13 @@ public class MouseController : MonoBehaviour
         // Zoom stuff
         Camera.main.orthographicSize -= Camera.main.orthographicSize * Input.GetAxis("Mouse ScrollWheel") * scrollIntensity;
         Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize, zoomOutMin, zoomOutMax);
+    }
+
+    public void SetMode_BuildFloor() {
+        buildModeTile = TileType.Floor;
+    }
+    public void SetMode_Bulldoze() {
+        buildModeTile = TileType.Empty;
     }
 
 }

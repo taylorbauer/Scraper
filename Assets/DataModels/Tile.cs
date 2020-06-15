@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+public enum TileType {Empty, Floor};
 public class Tile 
 {
-    public enum TileType {Empty, Floor};
     Action<Tile> tileTypeChangedCallback;
 
     TileType _type = TileType.Floor;

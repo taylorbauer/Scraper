@@ -61,4 +61,11 @@ public class WorldController : MonoBehaviour
             Debug.Log ("OnTileTypeChanged(): Unrecognized tile type");
         }
     }
+
+    public Tile getTileAtWorldCoord(Vector3 coord) {
+        int x = Mathf.FloorToInt(coord.x);
+        int y = Mathf.FloorToInt(coord.y);
+
+        return WorldController.instance.world.GetTileAt(x,y, 0);
+    }
 }

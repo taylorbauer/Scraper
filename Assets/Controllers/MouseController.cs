@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems; 
+using UnityEngine.EventSystems;
 
 public class MouseController : MonoBehaviour
 {
@@ -12,6 +12,7 @@ public class MouseController : MonoBehaviour
     public float scrollIntensity;
     public float zoomOutMax;
     public float zoomOutMin;
+    bool buildModeIsObjects = false;
     Vector3 lastFramePosition;
     Vector3 dragStartPosition;
     Vector3 currentFramePosition;
@@ -56,7 +57,8 @@ public class MouseController : MonoBehaviour
         // Handling left mouse clicks
 
         // If we are over a UI element, we need to bail out
-        if (EventSystem.current.IsPointerOverGameObject()) {
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
             // ^^Like, specifically, is it over a user interface object.
             return;
         }
@@ -85,10 +87,11 @@ public class MouseController : MonoBehaviour
         }
 
         // Clean up old drag previews
-        while(dragPreviewGameObjects.Count > 0) {
+        while (dragPreviewGameObjects.Count > 0)
+        {
             GameObject go = dragPreviewGameObjects[0];
             dragPreviewGameObjects.RemoveAt(0);
-            Destroy (go);
+            Destroy(go);
         }
 
         if (Input.GetMouseButton(0))
@@ -103,10 +106,11 @@ public class MouseController : MonoBehaviour
                 for (int y = start_y; y <= end_y; y++)
                 {
                     Tile t = WorldController.instance.world.GetTileAt(x, y, 0);
+
                     if (t != null)
                     {
                         // Display the building hint on top of this tile position
-                        GameObject go = (GameObject)Instantiate(circleCursorPrefab, new Vector3(x,y,0), Quaternion.identity);
+                        GameObject go = (GameObject)Instantiate(circleCursorPrefab, new Vector3(x, y, 0), Quaternion.identity);
                         go.transform.SetParent(this.transform, true);
                         dragPreviewGameObjects.Add(go);
                     }
@@ -124,7 +128,15 @@ public class MouseController : MonoBehaviour
                     Tile t = WorldController.instance.world.GetTileAt(x, y, 0);
                     if (t != null)
                     {
-                        t.type = buildModeTile;
+                        if (buildModeIsObjects)
+                        {
+                            // Create the installedObject and assign it to the tile
+                            // FIXME: Right now, we're going to assume walls
+                        }
+                        else
+                        {
+                            t.type = buildModeTile;
+                        }
                     }
                 }
             }
@@ -146,11 +158,20 @@ public class MouseController : MonoBehaviour
         Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize, zoomOutMin, zoomOutMax);
     }
 
-    public void SetMode_BuildFloor() {
+    public void SetMode_BuildFloor()
+    {
+        buildModeIsObjects = false;
         buildModeTile = TileType.Floor;
     }
-    public void SetMode_Bulldoze() {
+    public void SetMode_Bulldoze()
+    {
+        buildModeIsObjects = false;
         buildModeTile = TileType.Empty;
+    }
+
+    public void SetMode_BuildWall()
+    { // Wall isn't a tile, it's an InstalledObject that exists on TOP of a tile
+        buildModeIsObjects = true;
     }
 
 }

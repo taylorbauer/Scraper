@@ -13,6 +13,7 @@ public class MouseController : MonoBehaviour
     public float zoomOutMax;
     public float zoomOutMin;
     bool buildModeIsObjects = false;
+    string buildModeObjectType;
     Vector3 lastFramePosition;
     Vector3 dragStartPosition;
     Vector3 currentFramePosition;
@@ -131,7 +132,7 @@ public class MouseController : MonoBehaviour
                         if (buildModeIsObjects)
                         {
                             // Create the installedObject and assign it to the tile
-                            // FIXME: Right now, we're going to assume walls
+                            WorldController.instance.world.PlaceInstalledObject(buildModeObjectType, t);
                         }
                         else
                         {
@@ -169,9 +170,10 @@ public class MouseController : MonoBehaviour
         buildModeTile = TileType.Empty;
     }
 
-    public void SetMode_BuildWall()
+    public void SetMode_BuildInstalledObject(string objectType)
     { // Wall isn't a tile, it's an InstalledObject that exists on TOP of a tile
         buildModeIsObjects = true;
+        buildModeObjectType = objectType;
     }
 
 }

@@ -10,7 +10,9 @@ public class WorldController : MonoBehaviour
 
     public static WorldController instance {get; protected set;}
     Dictionary<Tile, GameObject> tileGameObjectMap;
-    public Sprite floorSprite;
+    Dictionary<InstalledObject, GameObject> installedObjectGameObjectMap;
+    public Sprite floorSprite; // FIXME
+    public Sprite wallSprite;  // FIXME
     public World world {get; protected set;}
     // Start is called before the first frame update
     void Start()
@@ -21,8 +23,12 @@ public class WorldController : MonoBehaviour
         instance = this;
 
         world = new World();
+
+        world.RegisterInstalledObjectCreated(OnInstalledObjectCreated);
+
         //world.RandomizeTiles();
         tileGameObjectMap = new Dictionary<Tile, GameObject>();
+        installedObjectGameObjectMap = new Dictionary<InstalledObject, GameObject>();
 
         // Create GameObject for each tiles, so we can see them
         for (int x = 0; x < world.width; x ++) {
@@ -83,5 +89,28 @@ public class WorldController : MonoBehaviour
         int y = Mathf.FloorToInt(coord.y);
 
         return WorldController.instance.world.GetTileAt(x,y, 0);
+    }
+
+    public void OnInstalledObjectCreated( InstalledObject obj_data ) {
+        // Crate a *visual* GameObject linked to this data
+
+        // FIXME: Does not consider multi-tile or rotated objects
+
+        GameObject obj_go = new GameObject();
+        installedObjectGameObjectMap.Add(obj_data, obj_go);
+        obj_go.gameObject.name = obj_data.objectType + "_" + obj_data.tile.x + "_" + obj_data.tile.y + "_0";
+
+
+        // FIXME: We're assuming that the object must be a wall, so we use the hardcoded reference to the wallsprite
+        obj_go.AddComponent<SpriteRenderer>().sprite = wallSprite;  // FIXME
+        obj_go.transform.position = new Vector3(obj_data.tile.x, obj_data.tile.y, 0);
+
+        obj_data.RegisterOnChangedCallback(OnInstalledObjectChanged);
+
+        obj_go.transform.SetParent(this.transform, true);
+    }
+
+    void OnInstalledObjectChanged(InstalledObject obj) {
+        Debug.LogError("OnInstalledObjectChanged -- Not Implemented!");
     }
 }

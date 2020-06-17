@@ -55,5 +55,21 @@ public class Tile
         tileTypeChangedCallback -= callback;
     }
 
+    public bool PlaceObject(InstalledObject objectInstance) {
+        if(objectInstance == null) {
+            // we are uninstalling whatever was here before
+            installedObject = null;
+            return true;
+        }
 
+        // objectInstance isn't null
+        if (installedObject != null) {
+            Debug.LogError("Trying to assign an installed object to a tile that already has one");
+            return false;
+        }
+        else {
+            installedObject = objectInstance;
+            return true;
+        }
+    }
 }

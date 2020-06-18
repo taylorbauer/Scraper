@@ -46,8 +46,8 @@
   </PropertyGroup>
   <ItemGroup>     <Compile Include="Assets\Controllers\MouseController.cs" />
      <Compile Include="Assets\Controllers\WorldController.cs" />
-     <Compile Include="Assets\DataModels\InstalledObject.cs" />
-     <Compile Include="Assets\DataModels\LooseObject.cs" />
+     <Compile Include="Assets\DataModels\Furniture.cs" />
+     <Compile Include="Assets\DataModels\Inventory.cs" />
      <Compile Include="Assets\DataModels\Tile.cs" />
      <Compile Include="Assets\DataModels\World.cs" />
      <Compile Include="Assets\UI\AutomaticVerticalSize.cs" />

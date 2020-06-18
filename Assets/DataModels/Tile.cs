@@ -23,10 +23,10 @@ public class Tile
         }
     }
 
-    LooseObject looseObject;
-    InstalledObject installedObject;
+    Inventory looseObject;
+    public Furniture furniture {get; protected set;}
 
-    World world;
+    public World world {get; protected set;}
     int _x;
     public int x {
         get {
@@ -55,20 +55,20 @@ public class Tile
         tileTypeChangedCallback -= callback;
     }
 
-    public bool PlaceObject(InstalledObject objectInstance) {
+    public bool PlaceObject(Furniture objectInstance) {
         if(objectInstance == null) {
             // we are uninstalling whatever was here before
-            installedObject = null;
+            furniture = null;
             return true;
         }
 
         // objectInstance isn't null
-        if (installedObject != null) {
+        if (furniture != null) {
             Debug.LogError("Trying to assign an installed object to a tile that already has one");
             return false;
         }
         else {
-            installedObject = objectInstance;
+            furniture = objectInstance;
             return true;
         }
     }

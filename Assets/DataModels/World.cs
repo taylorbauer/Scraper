@@ -7,7 +7,7 @@ public class World
 {
     Tile[,,] tiles;
 
-    Dictionary<string, InstalledObject> installedObjectPrototypes;
+    Dictionary<string, Furniture> furniturePrototypes;
 
     int _width;
     public int width
@@ -28,7 +28,7 @@ public class World
     int _vertical_height;
     int _vertical_depth;
 
-    Action<InstalledObject> cbInstalledObjectCreated;
+    Action<Furniture> cbFurnitureCreated;
 
     public World(int width = 150, int height = 150)
     {
@@ -48,21 +48,23 @@ public class World
         RandomizeTiles();
         Debug.Log("World created with " + width * height + " tiles.");
 
-        CreateInstalledObjectPrototypes();
+        CreateFurniturePrototypes();
 
 
     }
 
-    void CreateInstalledObjectPrototypes()
+    void CreateFurniturePrototypes()
     {
-        installedObjectPrototypes = new Dictionary<string, InstalledObject>();
-        InstalledObject wallPrototype = InstalledObject.CreatePrototype(
+        Debug.Log("Creating furniture prototypes...");
+        furniturePrototypes = new Dictionary<string, Furniture>();
+        Furniture wallPrototype = Furniture.CreatePrototype(
             "Wall",
             0,
             1,
-            1
+            1,
+            true // links to neighbors and sort of becomes part of a larger object
         );
-        installedObjectPrototypes.Add("Wall", wallPrototype);
+        furniturePrototypes.Add("Wall", wallPrototype);
     }
 
 
@@ -95,29 +97,29 @@ public class World
         return tiles[x, y, level];
     }
 
-    public void PlaceInstalledObject(string objectType, Tile t) {
+    public void PlaceFurniture(string objectType, Tile t) {
         // TODO: this function assumes 1x1 tiles -- this needs to be changed
-        if (installedObjectPrototypes.ContainsKey(objectType) == false) {
-            Debug.LogError("installedObjectPrototypes does nto contain prototype for key: " + objectType);
+        if (furniturePrototypes.ContainsKey(objectType) == false) {
+            Debug.LogError("furniturePrototypes does nto contain prototype for key: " + objectType);
             return;
         }
 
-        InstalledObject obj = InstalledObject.PlaceInstance( installedObjectPrototypes[objectType], t);
+        Furniture obj = Furniture.PlaceInstance( furniturePrototypes[objectType], t);
 
         if(obj == null) {
             // Failed to place object -- most likely there was already something there
             return;
         }
 
-        if (cbInstalledObjectCreated != null) {
-            cbInstalledObjectCreated(obj);
+        if (cbFurnitureCreated != null) {
+            cbFurnitureCreated(obj);
         }
     }
 
-    public void RegisterInstalledObjectCreated(Action<InstalledObject> callbackFunc) {
-        cbInstalledObjectCreated += callbackFunc;
+    public void RegisterFurnitureCreated(Action<Furniture> callbackFunc) {
+        cbFurnitureCreated += callbackFunc;
     }
-    public void UnregisterInstalledObjectCreated(Action<InstalledObject> callbackFunc) {
-        cbInstalledObjectCreated -= callbackFunc;
+    public void UnregisterFurnitureCreated(Action<Furniture> callbackFunc) {
+        cbFurnitureCreated -= callbackFunc;
     }
 }

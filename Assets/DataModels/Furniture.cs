@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-// InstalledObjects are things that can't be picked up and moved, like walls, furniture, doors, etc
+// Furnitures are things that can't be picked up and moved, like walls, furniture, doors, etc
 
-public class InstalledObject 
+public class Furniture 
 {
     // This rerpresents the *base* tile of an object, but in practice, large objects can
     // occupy multiple tiles
@@ -24,50 +24,81 @@ public class InstalledObject
     int width;
     int height;
 
-    Action<InstalledObject> cbOnChanged;
+    public bool linksToNeighbor { get; protected set;}
+
+    Action<Furniture> cbOnChanged;
 
     // TODO: Implement larger objects
     // TODO: Implement object rotation
 
     // This is protected because we don't want other classes to be able to
     // create empty objects
-    protected InstalledObject() { 
+    protected Furniture() { 
     }
 
     // This constructor is used by our "object factory" to create the prototypical object
-    static public InstalledObject CreatePrototype(string objectType, float movementCost = 1f, int width = 1, int height = 1) {
-        InstalledObject obj = new InstalledObject();
+    static public Furniture CreatePrototype(string objectType, float movementCost = 1f, int width = 1, int height = 1, bool linksToNeighbor = false) {
+        Furniture obj = new Furniture();
         obj.objectType = objectType;
         obj.movementCost = movementCost;
         obj.width = width;
         obj.height = height;
+        obj.linksToNeighbor = linksToNeighbor;
 
         return obj;
     }
 
-    static public InstalledObject PlaceInstance(InstalledObject proto, Tile tile) {
-        InstalledObject copy = new InstalledObject();
+    static public Furniture PlaceInstance(Furniture proto, Tile tile) {
+        Furniture copy = new Furniture();
         copy.objectType = proto.objectType;
         copy.movementCost = proto.movementCost;
         copy.width = proto.width;
         copy.height = proto.height;
+        copy.linksToNeighbor = proto.linksToNeighbor;
 
         copy.tile = tile;
         // FIXME: This is assuming every object is 1x1
         if(tile.PlaceObject(copy) == false) {
             // For some reason, we couldn't place the object in the tile
             // It is likely already occupied
-            Debug.Log("Unable to place InstalledObject");
+            Debug.Log("Unable to place Furniture");
             return null;
+        }
+
+        if (copy.linksToNeighbor)
+        { // If it links to its neighbors, gotta update them also
+            int x = tile.x;
+            int y = tile.y;
+
+            Tile t = tile.world.GetTileAt(x, y + 1, 0);
+            if (t != null && t.furniture != null && t.furniture.objectType == copy.objectType)
+            {
+                t.furniture.cbOnChanged(t.furniture);
+            }
+            t = tile.world.GetTileAt(x + 1, y, 0);
+            if (t != null && t.furniture != null && t.furniture.objectType == copy.objectType)
+            {
+                t.furniture.cbOnChanged(t.furniture);
+            }
+            t = tile.world.GetTileAt(x, y - 1, 0);
+            if (t != null && t.furniture != null && t.furniture.objectType == copy.objectType)
+            {
+                t.furniture.cbOnChanged(t.furniture);
+            }
+            t = tile.world.GetTileAt(x - 1, y, 0);
+            if (t != null && t.furniture != null && t.furniture.objectType == copy.objectType)
+            {
+                t.furniture.cbOnChanged(t.furniture);
+            }
         }
 
         return copy;
     }
 
-    public void RegisterOnChangedCallback(Action<InstalledObject> callbackFunc) {
+    public void RegisterOnChangedCallback(Action<Furniture> callbackFunc) {
         cbOnChanged += callbackFunc;
     }
-    public void UnregisterOnChangedCallback(Action<InstalledObject> callbackFunc) {
+    public void UnregisterOnChangedCallback(Action<Furniture> callbackFunc) {
         cbOnChanged -= callbackFunc;
     }
 

@@ -10,13 +10,25 @@ public class WorldController : MonoBehaviour
 
     public static WorldController instance {get; protected set;}
     Dictionary<Tile, GameObject> tileGameObjectMap;
-    Dictionary<InstalledObject, GameObject> installedObjectGameObjectMap;
+    Dictionary<Furniture, GameObject> furnitureGameObjectMap;
     public Sprite floorSprite; // FIXME
-    public Sprite wallSprite;  // FIXME
+ 
     public World world {get; protected set;}
+
+    Dictionary<string, Sprite> furnitureSprites;
+
     // Start is called before the first frame update
     void Start()
     {
+        furnitureSprites = new Dictionary<string, Sprite>();
+
+        Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites/Furnitures/");
+
+        foreach(Sprite s in sprites) {
+            furnitureSprites[s.name] = s;
+            Debug.Log("Loaded sprite " + s);
+        }
+
         if (instance != null) {
             Debug.LogError("Problem!  There should never be 2 WorldControllers.");
         }
@@ -24,11 +36,11 @@ public class WorldController : MonoBehaviour
 
         world = new World();
 
-        world.RegisterInstalledObjectCreated(OnInstalledObjectCreated);
+        world.RegisterFurnitureCreated(OnFurnitureCreated);
 
         //world.RandomizeTiles();
         tileGameObjectMap = new Dictionary<Tile, GameObject>();
-        installedObjectGameObjectMap = new Dictionary<InstalledObject, GameObject>();
+        furnitureGameObjectMap = new Dictionary<Furniture, GameObject>();
 
         // Create GameObject for each tiles, so we can see them
         for (int x = 0; x < world.width; x ++) {
@@ -91,26 +103,73 @@ public class WorldController : MonoBehaviour
         return WorldController.instance.world.GetTileAt(x,y, 0);
     }
 
-    public void OnInstalledObjectCreated( InstalledObject obj_data ) {
+    public void OnFurnitureCreated( Furniture obj_data ) {
         // Crate a *visual* GameObject linked to this data
 
         // FIXME: Does not consider multi-tile or rotated objects
 
         GameObject obj_go = new GameObject();
-        installedObjectGameObjectMap.Add(obj_data, obj_go);
+        furnitureGameObjectMap.Add(obj_data, obj_go);
         obj_go.gameObject.name = obj_data.objectType + "_" + obj_data.tile.x + "_" + obj_data.tile.y + "_0";
 
 
         // FIXME: We're assuming that the object must be a wall, so we use the hardcoded reference to the wallsprite
-        obj_go.AddComponent<SpriteRenderer>().sprite = wallSprite;  // FIXME
+        obj_go.AddComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(obj_data); 
+        obj_go.GetComponent<SpriteRenderer>().sortingLayerName = "Furnitures";
         obj_go.transform.position = new Vector3(obj_data.tile.x, obj_data.tile.y, 0);
 
-        obj_data.RegisterOnChangedCallback(OnInstalledObjectChanged);
+        obj_data.RegisterOnChangedCallback(OnFurnitureChanged);
 
         obj_go.transform.SetParent(this.transform, true);
     }
 
-    void OnInstalledObjectChanged(InstalledObject obj) {
-        Debug.LogError("OnInstalledObjectChanged -- Not Implemented!");
+    Sprite GetSpriteForFurniture(Furniture obj) {
+        
+        if(obj.linksToNeighbor == false) {
+            return furnitureSprites[obj.objectType];
+        }
+        // Otherwise, the sprite name is more coplicated
+        string spriteName = obj.objectType + "_";
+
+        int x = obj.tile.x;
+        int y = obj.tile.y;
+
+        // Now check for neighbors
+        Tile t = world.GetTileAt(x, y + 1, 0);
+        if (t != null && t.furniture != null && t.furniture.objectType == obj.objectType) {
+            spriteName += "N";
+        }
+        t = world.GetTileAt(x + 1, y, 0);
+        if (t != null && t.furniture != null && t.furniture.objectType == obj.objectType) {
+            spriteName += "E";
+        }
+        t = world.GetTileAt(x, y - 1, 0);
+        if (t != null && t.furniture != null && t.furniture.objectType == obj.objectType) {
+            spriteName += "S";
+        }
+        t = world.GetTileAt(x - 1, y, 0);
+        if (t != null && t.furniture != null && t.furniture.objectType == obj.objectType) {
+            spriteName += "W";
+        }
+
+        if (furnitureSprites.ContainsKey(spriteName) == false) {
+            Debug.LogError("GetSpriteForFurniture -- No Sprite with name: " + spriteName);
+            return null;
+        }
+        
+        return furnitureSprites[spriteName];
+    }
+
+    void OnFurnitureChanged(Furniture obj) {
+        // Make sure that the furniture's graphics are correct.
+        if (furnitureGameObjectMap.ContainsKey(obj) == false) {
+            Debug.LogError("OnFurnitureChanged -- That object doesn't seem to exist");
+        }
+
+        GameObject obj_go = furnitureGameObjectMap[obj];
+        obj_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(obj); 
+        obj_go.GetComponent<SpriteRenderer>().sortingLayerName = "Furnitures";
+
+
     }
 }
